@@ -1,29 +1,45 @@
-const express = require("express");
-const app = express();
-const http = require("http");
-const server = http.createServer(app);
-const { Server } = require("socket.io");
+import express from 'express'
+import { createServer } from 'http'
+import mongoose from 'mongoose'
+import { Server } from 'socket.io'
+import ElementState from './models/elements.js'
 
-const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
-});
+const app = express()
+const httpServer = createServer(app)
 
-//Whenever someone connects this gets executed
-io.on("connection", function (socket) {
-  console.log("A user connected");
-  socket.on("elements-change", (data) => {
-    socket.broadcast.emit("get-elements-change", data);
-  });
+mongoose.connect('mongodb://localhost/drawboard')
 
-  //Whenever someone disconnects this piece of code executed
-  socket.on("disconnect", function () {
-    console.log("A user disconnected");
-  });
-});
+const io = new Server(httpServer, {
+	cors: {
+		origin: 'http://localhost:3000',
+		methods: ['GET', 'POST'],
+	},
+})
 
-server.listen(3001, () => {
-  console.log("listening on *:3001");
-});
+io.on('connection', function (socket) {
+	socket.on('get-room', async (documentId) => {
+		if (documentId == null) return
+		const room = await findOrCreateRoom(documentId)
+		socket.join(documentId)
+		socket.emit('load-document', room.data)
+		socket.on('elements-change', async (data) => {
+			if (data == null) return
+			socket.broadcast.to(documentId).emit('get-element-changes', data)
+			const res = await ElementState.findByIdAndUpdate(documentId, { data })
+		})
+	})
+})
+
+httpServer.listen(3001, () => {})
+
+const findOrCreateRoom = async (documentId) => {
+	if (documentId == null) return
+
+	const room = await ElementState.findById(documentId)
+	if (room) return room
+
+	return await ElementState.create({
+		_id: documentId,
+		data: [],
+	})
+}
