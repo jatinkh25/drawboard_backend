@@ -7,11 +7,11 @@ import ElementState from './models/elements.js'
 const app = express()
 const httpServer = createServer(app)
 
-mongoose.connect('mongodb://localhost/drawboard')
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/drawboard')
 
 const io = new Server(httpServer, {
 	cors: {
-		origin: 'http://localhost:3000',
+		origin: process.env.FRONTEND_URL || 'http://localhost:3000',
 		methods: ['GET', 'POST'],
 	},
 })
@@ -30,8 +30,9 @@ io.on('connection', function (socket) {
 	})
 })
 
-httpServer.listen(3001, () => {})
+httpServer.listen(process.env.PORT || 3001)
 
+//finds room for the user, if not present creates a new room
 const findOrCreateRoom = async (documentId) => {
 	if (documentId == null) return
 
