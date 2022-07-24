@@ -1,19 +1,29 @@
-# This repo contains backend code of Drawboard app.
+# Drawboard App - Backend
 
-## Running Project for the first time
+This repo contains the backend code of Drawboard App.\
+[Frontend Repo Link](https://github.com/jatinkh25/drawboard_frontend)
 
-### `yarn install`
+## How To Use
 
-Installs all the dependencies of the project in your local environment.
+To clone and run this application you'll need [Git](https://git-scm.com), [NodeJS](https://nodejs.org/en) and [Yarn](https://yarnpkg.com) installed on your system. Commands to run after installing these dependencies :
 
-## Available Scripts
+```bash
+# Clone this repository
+$ git clone https://github.com/jatinkh25/drawboard_backend
 
-In the project directory, you can run:
+# Go to the repository folder
+$ cd drawboard_backend
 
-### `yarn dev`
+# Install dependencies
+$ yarn install
 
-Runs the app in the development mode.\
-Open [http://localhost:3001](http://localhost:3001) to view it in your browser.
+# Run the app
+$ yarn dev
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```
+
+## Key Technologies
+
+- Backend of Drawboard is made using [ExpressJS]() as a backend framework.
+- It uses [MongoDB](https://www.mongodb.com) as a database management system for storing the information of elements present on the canvas.
+- It uses [Socket.IO](https://socket.io) for real time transmission of data between users on the same link.
